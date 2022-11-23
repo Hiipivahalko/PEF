@@ -1,5 +1,46 @@
 # PEF
 
+## installation
+
+* PEF has dependencies on [SDSL-library](https://github.com/Hiipivahalko/sdsl-lite.git) and [SUX](https://github.com/vigna/sux.git).
+Install libraries to your include path (see instructions from links).
+* All PEF implementations are template, to use PEF, copy the content from `./src/include` directory to your include path.
+
+
+### Dev config
+
+For VIM run following command after external lib installation for coc.vim to find sources:
+
+```bash
+bear -- make
+```
+This command creates file `compile_commands.json`.
+
+## TEST libraries
+
+### test setup
+
+```bash
+mkdir -p external/cpp_libs
+cd external
+git clone https://github.com/Hiipivahalko/sdsl-lite.git
+cd sdsl-lite && ./install ../cpp_libs && cd .. # install sdsl to cpp_libs directory
+git clone https://github.com/vigna/sux.git
+cp -a sux/sux cpp_libs/include
+```
+
+### running tests
+
+Run scriptfile `run_all_tests.sh` in project root directory:
+```bash
+./run_all_tests.sh
+```
+
+For running a specific testsets:
+```bash
+./run_all_tests.sh input <prefix_of_test_case>
+```
+
 ## PEF Uniform
 
 ### rank operation
