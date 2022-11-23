@@ -1,0 +1,17 @@
+[
+    {
+        "arguments": [
+            "g++",
+            "-c",
+            "-std=c++17",
+            "-I./external/cpp_libs/include",
+            "-I./src/include",
+            "-O3",
+            "-o",
+            "build/pef",
+            "src/main.cpp"
+        ],
+        "directory": "/home/hiipivahalko/hy/tkt/gradu/PEF",
+        "file": "src/main.cpp"
+    }
+]

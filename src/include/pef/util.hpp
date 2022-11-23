@@ -3,11 +3,11 @@
 
 #include <vector>
 #include <utility>
-#include "sux/sux/bits/EliasFano.hpp"
+//#include <sux/bits/EliasFano.hpp>
 
 using namespace std;
 
-class cost_window {  
+class cost_window {
   public:
     std::vector<uint64_t>::iterator _start_it;
     std::vector<uint64_t>::iterator _end_it;
@@ -59,13 +59,13 @@ class cost_window {
     }
 
     void print(uint64_t i) {
-      cout << "window " << i << ": start " 
-           << _start << " end " 
-           << _end << " min_p " 
-           << _min_p << " max_p " 
-           << _max_p << " u " 
+      cout << "window " << i << ": start "
+           << _start << " end "
+           << _end << " min_p "
+           << _min_p << " max_p "
+           << _max_p << " u "
            << universe() << " n "
-           << size() << " cost " 
+           << size() << " cost "
            << _cost_upper_bound << "\n";
     }
 };
@@ -88,7 +88,7 @@ static const uint64_t debruijn64 = 0x07EDD5E59A4E28C2ULL;
 
 // return the position of the single bit set in the word x
 inline uint8_t bit_position(uint64_t x){
-    assert(popcount(x) == 1);
+    assert(__builtin_popcountll(x) == 1);
     return debruijn64_mapping[(x * debruijn64) >> 58];
 }
 
@@ -111,7 +111,7 @@ inline uint8_t msb(uint64_t x, unsigned long& ret){
 
   return true;
 }
- 
+
 inline uint8_t msb(uint64_t x){
   unsigned long ret = -1U;
   msb(x, ret);
@@ -169,15 +169,15 @@ inline int lambda_safe(uint64_t word) { return word == 0 ? -1 : 63 ^ __builtin_c
 uint64_t bitsize_ef_vigna(uint64_t universe, uint64_t n) {
   uint64_t nums_ones = n;
   uint64_t nums_bits = universe;
-  
-  // size in bytes of lower attribute in EliasFano class of Vigna 
+
+  // size in bytes of lower attribute in EliasFano class of Vigna
   uint64_t L = (nums_ones == 0 ? 0 : std::max(lambda_safe(nums_bits / nums_ones), 0));
   uint64_t size_lower = ((nums_ones * L + 63) / 64 + 2 * (L == 0)) * sizeof(uint64_t);
-  
+
   // size in bytes of upper attribute in EliasFano class of Vigna
   uint64_t upper_bits = nums_ones + (nums_bits >> L);
   uint64_t size_upper = ((upper_bits + 1 + 63) / 64) * sizeof(uint64_t);
- 
+
   // this two variables are usefull to know the size of SimpleSelectHalf and SimpleSelectZeroHalf
   // two attributes in EliasFano class of vigna
   uint64_t log2_longwords_per_subinventory = 2;
@@ -187,14 +187,14 @@ uint64_t bitsize_ef_vigna(uint64_t universe, uint64_t n) {
   uint64_t log2_ones_per_inventory = 10;
   uint64_t ones_per_inventory = 1 << 10;
   uint64_t size_select_upper = 0;//(((nums_ones + ones_per_inventory - 1) / ones_per_inventory) * (longwords_per_subinventory + 1) + 1) * sizeof(uint64_t);
- 
+
   // size in bytes of selectz_upper attribute in EliasFano class of Vigna
   uint64_t nums_zeros = upper_bits - nums_ones;
   uint64_t log2_zeros_per_inventory = 10;
   uint64_t zeros_per_inventory = 1 << log2_zeros_per_inventory;
   uint64_t size_selectz_upper = 0;//(((nums_zeros + zeros_per_inventory - 1) / zeros_per_inventory) * (longwords_per_subinventory + 1) + 1) * sizeof(uint64_t);
 
-  return 8 * (size_lower + size_upper + size_select_upper + size_selectz_upper);  
+  return 8 * (size_lower + size_upper + size_select_upper + size_selectz_upper);
 }
 
 void print(std::vector< uint64_t > &v){
@@ -209,13 +209,13 @@ uint64_t bitsize_selects_ef_vigna(uint64_t universe, uint64_t n){
   uint64_t nums_ones = n;
   uint64_t nums_bits = universe;
 
-  // size in bytes of lower attribute in EliasFano class of Vigna 
+  // size in bytes of lower attribute in EliasFano class of Vigna
   uint64_t L = (nums_ones == 0 ? 0 : std::max(lambda_safe(nums_bits / nums_ones), 0));
-  
+
   // size in bytes of upper attribute in EliasFano class of Vigna
   uint64_t upper_bits = nums_ones + (nums_bits >> L);
- 
-  // this two variables are usefull to know the size of SimpleSelectHalf and SimpleSelectZeroHalf    
+
+  // this two variables are usefull to know the size of SimpleSelectHalf and SimpleSelectZeroHalf
   // two attributes in EliasFano class of vigna
   uint64_t log2_longwords_per_subinventory = 2;
   uint64_t longwords_per_subinventory = 1 << log2_longwords_per_subinventory;
@@ -224,7 +224,7 @@ uint64_t bitsize_selects_ef_vigna(uint64_t universe, uint64_t n){
   uint64_t log2_ones_per_inventory = 10;
   uint64_t ones_per_inventory = 1 << 10;
   uint64_t size_select_upper = (((nums_ones + ones_per_inventory - 1) / ones_per_inventory) * (longwords_per_subinventory + 1) + 1) * sizeof(uint64_t);
- 
+
   // size in bytes of selectz_upper attribute in EliasFano class of Vigna
   uint64_t nums_zeros = upper_bits - nums_ones;
   uint64_t log2_zeros_per_inventory = 10;
@@ -242,7 +242,7 @@ uint64_t bits_rank_support_v(uint64_t u, uint64_t n){
   uint64_t capacity = ((u + 63) >> 6) << 6;
   uint64_t size_int_vector = ((capacity >> 9) + 1);
   uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
-  return ceil_log2_n * size_int_vector + 64 * size_int_vector; 
+  return ceil_log2_n * size_int_vector + 64 * size_int_vector;
 }
 
 uint64_t bits_rank_support_v5(uint64_t u, uint64_t n){
@@ -250,7 +250,7 @@ uint64_t bits_rank_support_v5(uint64_t u, uint64_t n){
   uint64_t size_int_vector = ((capacity >> 11) + 1);
   uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
   return ceil_log2_n * size_int_vector
-         + 64 * size_int_vector; 
+         + 64 * size_int_vector;
 }
 
 uint64_t bits_select_support_mcl(uint64_t u, uint64_t n){
@@ -258,8 +258,8 @@ uint64_t bits_select_support_mcl(uint64_t u, uint64_t n){
   uint64_t ceil_log2_u = (u % 2 == 0 ? lambda_safe(u) : lambda_safe(u) + 1);
   uint64_t m_superblock_bits = ceil_log2_u * size_int_vector;
   //uint64_t mini_or_long_bits = 64 * (size_int_vector / 64 + 1);
-  
-  return (sizeof(uint64_t)) * 8 
+
+  return (sizeof(uint64_t)) * 8
          + m_superblock_bits;
          //+ mini_or_long_bits;
 }
@@ -267,7 +267,7 @@ uint64_t bits_select_support_mcl(uint64_t u, uint64_t n){
 uint64_t bits_sd_vector(uint64_t u, uint64_t n){
   uint64_t ceil_log2_u = (u % 2 == 0 ? lambda_safe(u) : lambda_safe(u) + 1);
   uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
-  
+
   uint64_t bits_m_low = n * (ceil_log2_u - ceil_log2_n);
 
   uint64_t size_m_high = n + (1ULL << ceil_log2_n);
@@ -276,71 +276,71 @@ uint64_t bits_sd_vector(uint64_t u, uint64_t n){
   uint64_t bits_m_high_1_select = bits_select_support_mcl(u, n);
   uint64_t bits_m_high_0_select = bits_select_support_mcl(u, u - n);
 
-  return bits_m_low + bits_m_high 
-         + bits_m_high_1_select 
+  return bits_m_low + bits_m_high
+         + bits_m_high_1_select
          + bits_m_high_0_select;
 }
 
-uint64_t bits_built_sd_vector(uint64_t u, uint64_t n, sdsl::sd_vector<> &sd){
-  uint64_t ceil_log2_u = (u % 2 == 0 ? lambda_safe(u) : lambda_safe(u) + 1);
-  uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
-  
-  uint64_t bits_m_low = n * (ceil_log2_u - ceil_log2_n);
+//uint64_t bits_built_sd_vector(uint64_t u, uint64_t n, sdsl::sd_vector<> &sd){
+//  uint64_t ceil_log2_u = (u % 2 == 0 ? lambda_safe(u) : lambda_safe(u) + 1);
+//  uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
+//
+//  uint64_t bits_m_low = n * (ceil_log2_u - ceil_log2_n);
+//
+//  uint64_t size_m_high = n + (1ULL << ceil_log2_n);
+//  uint64_t bits_m_high = 64 * (size_m_high / 64 + 1);
+//
+//  uint64_t bits_m_high_1_select = bits_select_support_mcl(u, n);
+//  uint64_t bits_m_high_0_select = bits_select_support_mcl(u, u - n);
+//
+//  return bits_m_low + bits_m_high
+//         + bits_m_high_1_select
+//         + bits_m_high_0_select
+//         + sd.get_mini_or_low_bits_mcl();
+//}
+//
+//uint64_t bits_built_sd_vector_no_select(uint64_t u, uint64_t n){
+//  uint64_t ceil_log2_u = (u % 2 == 0 ? lambda_safe(u) : lambda_safe(u) + 1);
+//  uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
+//
+//  uint64_t bits_m_low = n * (ceil_log2_u - ceil_log2_n);
+//
+//  uint64_t size_m_high = n + (1ULL << ceil_log2_n);
+//  uint64_t bits_m_high = 64 * (size_m_high / 64 + 1);
+//
+//  uint64_t bits_m_high_1_select = 0;//bits_select_support_mcl(u, n);
+//  uint64_t bits_m_high_0_select = 0;//bits_select_support_mcl(u, u - n);
+//
+//  return bits_m_low + bits_m_high
+//         + bits_m_high_1_select
+//         + bits_m_high_0_select;
+//         //+ sd.get_mini_or_low_bits_mcl();
+//}
 
-  uint64_t size_m_high = n + (1ULL << ceil_log2_n);
-  uint64_t bits_m_high = 64 * (size_m_high / 64 + 1);
-
-  uint64_t bits_m_high_1_select = bits_select_support_mcl(u, n);
-  uint64_t bits_m_high_0_select = bits_select_support_mcl(u, u - n);
-
-  return bits_m_low + bits_m_high 
-         + bits_m_high_1_select 
-         + bits_m_high_0_select
-         + sd.get_mini_or_low_bits_mcl();
-}
-
-uint64_t bits_built_sd_vector_no_select(uint64_t u, uint64_t n){
-  uint64_t ceil_log2_u = (u % 2 == 0 ? lambda_safe(u) : lambda_safe(u) + 1);
-  uint64_t ceil_log2_n = (n % 2 == 0 ? lambda_safe(n) : lambda_safe(n) + 1);
-  
-  uint64_t bits_m_low = n * (ceil_log2_u - ceil_log2_n);
-
-  uint64_t size_m_high = n + (1ULL << ceil_log2_n);
-  uint64_t bits_m_high = 64 * (size_m_high / 64 + 1);
-
-  uint64_t bits_m_high_1_select = 0;//bits_select_support_mcl(u, n);
-  uint64_t bits_m_high_0_select = 0;//bits_select_support_mcl(u, u - n);
-
-  return bits_m_low + bits_m_high 
-         + bits_m_high_1_select 
-         + bits_m_high_0_select;
-         //+ sd.get_mini_or_low_bits_mcl();
-}
-
-uint64_t bits_built_select_support_mcl(uint64_t u, uint64_t n, sdsl::select_support_mcl<1> &select){
-  return bits_select_support_mcl(u, n) + select.get_mini_or_long_bits();
-}
-
+//uint64_t bits_built_select_support_mcl(uint64_t u, uint64_t n, sdsl::select_support_mcl<1> &select){
+//  return bits_select_support_mcl(u, n) + select.get_mini_or_long_bits();
+//}
+//
 uint64_t bits_bit_vector(uint64_t u, uint64_t n){
   uint64_t bits_bv = 64 * (u / 64 + 1);
   uint64_t bits_select = bits_select_support_mcl(u, n);
   uint64_t bits_rank = bits_rank_support_v(u, n);
   return bits_bv + bits_select + bits_rank;
 }
-
-uint64_t bits_built_bit_vector(uint64_t u, uint64_t n, sdsl::select_support_mcl<1> &select){
-  uint64_t bits_bv = 64 * (u / 64 + 1);
-  uint64_t bits_select = bits_built_select_support_mcl(u, n, select);
-  uint64_t bits_rank = bits_rank_support_v(u, n);
-  return bits_bv + bits_select + bits_rank;
-}
-
-uint64_t bits_built_bit_vector_no_select(uint64_t u, uint64_t n){
-  uint64_t bits_bv = 64 * (u / 64 + 1);
-  uint64_t bits_select = 0;//bits_built_select_support_mcl(u, n, select);
-  uint64_t bits_rank = bits_rank_support_v(u, n);
-  return bits_bv + bits_select + bits_rank;
-}
+//
+//uint64_t bits_built_bit_vector(uint64_t u, uint64_t n, sdsl::select_support_mcl<1> &select){
+//  uint64_t bits_bv = 64 * (u / 64 + 1);
+//  uint64_t bits_select = bits_built_select_support_mcl(u, n, select);
+//  uint64_t bits_rank = bits_rank_support_v(u, n);
+//  return bits_bv + bits_select + bits_rank;
+//}
+//
+//uint64_t bits_built_bit_vector_no_select(uint64_t u, uint64_t n){
+//  uint64_t bits_bv = 64 * (u / 64 + 1);
+//  uint64_t bits_select = 0;//bits_built_select_support_mcl(u, n, select);
+//  uint64_t bits_rank = bits_rank_support_v(u, n);
+//  return bits_bv + bits_select + bits_rank;
+//}
 
 // best bitsize function in https://github.com/ot/partitioned_elias_fano
 uint64_t bitsize(uint64_t universe, uint64_t n){
@@ -413,7 +413,7 @@ uint64_t new_type_encoding(uint64_t universe, uint64_t n){
   } else if(type == 2) {
     cout << "BIT ";
   }
-  
+
   if(type != 0) cout << universe << " " << n << " " << best_cost << "\n";
 */
   //cout << ef_cost << " " << rb_cost << "\n";
@@ -426,8 +426,8 @@ uint64_t type_encoding(uint64_t universe, uint64_t n){
   uint64_t type;
 
   // the sequence has all 1s? --> 0 bits; otherwise, +infty
-  //if(universe == n + 1) cout << "universe: " << universe << " n: " << n << "\n"; 
-  //if(universe == n + 2) cout << "universe: " << universe << " n: " << n << "\n"; 
+  //if(universe == n + 1) cout << "universe: " << universe << " n: " << n << "\n";
+  //if(universe == n + 2) cout << "universe: " << universe << " n: " << n << "\n";
   best_cost  = (universe == n) ? 0 : uint64_t(-1);
   type = 0;
 
@@ -448,7 +448,7 @@ uint64_t type_encoding(uint64_t universe, uint64_t n){
   } else if(type == 2) {
     cout << "BIT ";
   }
-  
+
   if(type != 0) cout << universe << " " << n << " " << best_cost << "\n";
   */
   return type;
